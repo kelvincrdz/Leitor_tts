@@ -62,6 +62,48 @@ function _func_InicializarListenersNavegacao() {
 
 document.addEventListener('DOMContentLoaded', function() {
   setTimeout(_func_InicializarLeitor, 0);
+
+  // Lógica para o botão 'Retomar Leitura Anterior' (com cache)
+  var btnResume = document.getElementById('btnResumeEpub');
+  if (btnResume) {
+    btnResume.addEventListener('click', function() {
+      var ultimo = localStorage.getItem('leitor_ultimo_epub_nome');
+      if (!ultimo) {
+        alert('Nenhum EPUB anterior encontrado. Carregue um novo arquivo.');
+        return;
+      }
+      if (typeof _recuperarEpubDoCache === 'function') {
+        _recuperarEpubDoCache(ultimo).then(function(data) {
+          if (!data) {
+            alert('Arquivo EPUB não encontrado no cache. Carregue novamente.');
+            return;
+          }
+          // Cria um File a partir do ArrayBuffer
+          var file = new File([data], ultimo, { type: 'application/epub+zip' });
+          var dataTransfer = new DataTransfer();
+          dataTransfer.items.add(file);
+          var fileInput = document.getElementById('fileInput');
+          fileInput.files = dataTransfer.files;
+          var event = new Event('change');
+          fileInput.dispatchEvent(event);
+        });
+      }
+    });
+  }
+
+  // Ao carregar um novo EPUB, salvar o nome como último aberto e cachear o arquivo
+  var fileInput = document.getElementById('fileInput');
+  if (fileInput) {
+    fileInput.addEventListener('change', function(e) {
+      var file = e.target.files[0];
+      if (file) {
+        localStorage.setItem('leitor_ultimo_epub_nome', file.name);
+        if (typeof _salvarEpubNoCache === 'function') {
+          _salvarEpubNoCache(file);
+        }
+      }
+    });
+  }
 });
 
 // Atalhos de teclado

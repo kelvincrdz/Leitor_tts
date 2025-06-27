@@ -9,6 +9,8 @@ var_objEPUB = {
   metadados: {},
 };
 
+var var_nomeArquivoEPUB = '';
+
 function _func_InicializarEPUB() {
   var_inputEpub = document.getElementById('fileInput');
   var_inputEpub.addEventListener('change', _func_CarregarEPUB);
@@ -17,6 +19,8 @@ function _func_InicializarEPUB() {
 function _func_CarregarEPUB(event) {
   var_arquivo = event.target.files[0];
   if (!var_arquivo) return;
+
+  var_nomeArquivoEPUB = var_arquivo.name;
 
   var leitor = new FileReader();
   leitor.onload = async function(e) {
@@ -85,6 +89,18 @@ function _func_CarregarEPUB(event) {
       if (typeof _func_showScreen === 'function') _func_showScreen(true);
       if (typeof _func_InicializarListenersNavegacao === 'function') _func_InicializarListenersNavegacao();
       setTimeout(_func_ExibirCapitulos, 50);
+
+      // Após carregar capítulos, restaurar progresso se existir
+      if (typeof _func_GerarChaveProgressoEPUB === 'function' && typeof _func_CarregarEstado === 'function') {
+        var chave = _func_GerarChaveProgressoEPUB(var_nomeArquivoEPUB, var_objEPUB.metadados);
+        var progresso = _func_CarregarEstado(chave);
+        if (progresso && typeof progresso === 'object') {
+          if (typeof _func_IrParaCapitulo === 'function') _func_IrParaCapitulo(progresso.capitulo || 0);
+          setTimeout(function() {
+            if (typeof _func_IrParaSentenca === 'function') _func_IrParaSentenca(progresso.sentenca || 0);
+          }, 200);
+        }
+      }
     } catch (err) {
       alert('Erro ao ler EPUB: ' + err.message);
     }

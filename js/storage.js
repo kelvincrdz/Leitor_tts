@@ -46,19 +46,34 @@ if (typeof _func_IrParaCapitulo === 'function') {
   var _old_IrParaCapitulo = _func_IrParaCapitulo;
   _func_IrParaCapitulo = function(idx) {
     _old_IrParaCapitulo(idx);
-    _func_SalvarEstado('progresso', {
-      capitulo: idx,
-      sentenca: 0
-    });
+    if (typeof _func_GerarChaveProgressoEPUB === 'function' && typeof var_nomeArquivoEPUB !== 'undefined' && typeof var_objEPUB !== 'undefined') {
+      var chave = _func_GerarChaveProgressoEPUB(var_nomeArquivoEPUB, var_objEPUB.metadados);
+      _func_SalvarEstado(chave, {
+        capitulo: idx,
+        sentenca: 0
+      });
+    }
   };
 }
 if (typeof _func_IrParaSentenca === 'function') {
   var _old_IrParaSentenca = _func_IrParaSentenca;
   _func_IrParaSentenca = function(idx) {
     _old_IrParaSentenca(idx);
-    _func_SalvarEstado('progresso', {
-      capitulo: var_objNavegacao.capituloAtual,
-      sentenca: idx
-    });
+    if (typeof _func_GerarChaveProgressoEPUB === 'function' && typeof var_nomeArquivoEPUB !== 'undefined' && typeof var_objEPUB !== 'undefined') {
+      var chave = _func_GerarChaveProgressoEPUB(var_nomeArquivoEPUB, var_objEPUB.metadados);
+      _func_SalvarEstado(chave, {
+        capitulo: var_objNavegacao.capituloAtual,
+        sentenca: idx
+      });
+    }
   };
+}
+
+function _func_GerarChaveProgressoEPUB(nomeArquivo, metadados) {
+  // Usa nome + título + autor para gerar uma chave única
+  var chave = nomeArquivo || '';
+  if (metadados && (metadados.titulo || metadados.autor)) {
+    chave += '_' + (metadados.titulo || '') + '_' + (metadados.autor || '');
+  }
+  return 'leitor_progresso_' + btoa(unescape(encodeURIComponent(chave)));
 } 
