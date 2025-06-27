@@ -61,16 +61,39 @@ function _func_TestarVozTTS() {
 }
 
 function _func_AjustarVelocidadeTTS() {
-  var_objTTS.velocidade = parseFloat(document.getElementById('range_velocidade').value);
+  var val = parseFloat(document.getElementById('range_velocidade').value);
+  var_objTTS.velocidade = val;
+  document.getElementById('velocidade_valor').textContent = val.toFixed(1);
 }
 
 function _func_AjustarTomTTS() {
-  var_objTTS.tom = parseFloat(document.getElementById('range_tom').value);
+  var val = parseFloat(document.getElementById('range_tom').value);
+  var_objTTS.tom = val;
+  document.getElementById('tom_valor').textContent = val.toFixed(1);
 }
 
 function _func_AjustarVolumeTTS() {
-  var_objTTS.volume = parseFloat(document.getElementById('range_volume').value);
+  var val = parseFloat(document.getElementById('range_volume').value);
+  var_objTTS.volume = val;
+  document.getElementById('volume_valor').textContent = val.toFixed(1);
 }
+
+// Ao inicializar, garantir que os sliders reflitam o valor salvo
+function _func_SincronizarSlidersTTS() {
+  document.getElementById('range_velocidade').value = var_objTTS.velocidade;
+  document.getElementById('velocidade_valor').textContent = var_objTTS.velocidade.toFixed(1);
+  document.getElementById('range_tom').value = var_objTTS.tom;
+  document.getElementById('tom_valor').textContent = var_objTTS.tom.toFixed(1);
+  document.getElementById('range_volume').value = var_objTTS.volume;
+  document.getElementById('volume_valor').textContent = var_objTTS.volume.toFixed(1);
+}
+
+// Chamar ao inicializar TTS
+var _old_InicializarTTS = _func_InicializarTTS;
+_func_InicializarTTS = function() {
+  _old_InicializarTTS();
+  _func_SincronizarSlidersTTS();
+};
 
 function _func_IniciarLeituraTTS() {
   if (!var_objNavegacao.sentencas || var_objNavegacao.sentencas.length === 0) return;

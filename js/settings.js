@@ -127,4 +127,32 @@ function _func_CarregarSettings() {
   }
   // Aplicar tema ao carregar
   _func_TrocarTema(var_objSettings.tema);
+  // Aplicar configurações de TTS ao carregar
+  if (typeof var_objTTS !== 'undefined') {
+    var_objTTS.velocidade = var_objSettings.velocidade;
+    var_objTTS.tom = var_objSettings.tom;
+    var_objTTS.volume = var_objSettings.volume;
+    if (typeof _func_SincronizarSlidersTTS === 'function') _func_SincronizarSlidersTTS();
+  }
+}
+
+// Salvar configurações ao mudar sliders de TTS
+if (typeof document !== 'undefined') {
+  document.addEventListener('DOMContentLoaded', function() {
+    var v = document.getElementById('range_velocidade');
+    var t = document.getElementById('range_tom');
+    var vol = document.getElementById('range_volume');
+    if (v) v.addEventListener('input', function() {
+      var_objSettings.velocidade = parseFloat(v.value);
+      _func_SalvarSettings();
+    });
+    if (t) t.addEventListener('input', function() {
+      var_objSettings.tom = parseFloat(t.value);
+      _func_SalvarSettings();
+    });
+    if (vol) vol.addEventListener('input', function() {
+      var_objSettings.volume = parseFloat(vol.value);
+      _func_SalvarSettings();
+    });
+  });
 } 
